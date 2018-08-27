@@ -12,7 +12,7 @@ Clone the repo and build using Go Build
 
 ## Download PreCompiled
 
-Versioned Binaries are in the near future
+Versioned Binaries are in the near future. For now there is a copy of the latest binary in the Downloads section of this repo
 
 ## Command Line Settings
 
