@@ -54,6 +54,7 @@ Sample config file (config.json)
 ## Windows Registry
 
 The application will update registry keys in thej following locations:
+
 *  Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\AMX Corp.\\NetLinx Studio\\NLXCompiler_Includes
 *  Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\AMX Corp.\\NetLinx Studio\\NLXCompiler_Modules
 *  Computer\\HKEY_CURRENT_USER\\Software\\AMX Corp.\\NetLinx Studio\\Editor Preferences
