@@ -30,7 +30,7 @@ Specify a config file for use (Default: config.json)
 Sample config file (config.json)
 ```json
 {
-  "BasePath": "%USERPROFILE%\\Documents\\BitBucketRepos\\_global_amx_files",
+  "BasePath": "%USERPROFILE%\\Documents\\BitBucketRepos\\SoloWorksAMX",
   "Modules": [
     "ModulesDuet",
     "ModulesNetlinx",

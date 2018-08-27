@@ -1,5 +1,5 @@
 {
-  "BasePath": "%USERPROFILE%\\Documents\\BitBucketRepos\\_global_amx_files",
+  "BasePath": "%USERPROFILE%\\Documents\\BitBucketRepos\\SoloWorksAMX",
   "Modules": [
     "ModulesDuet",
     "ModulesNetlinx",
