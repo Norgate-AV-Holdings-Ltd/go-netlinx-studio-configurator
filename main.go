@@ -143,10 +143,11 @@ func updateSettings(KeyName string, Values []regEntry, wg *sync.WaitGroup) {
 			if v.Value == true {
 				newValue = 1
 			}
-		case int:
+		case uint32:
 			newValue = v.Value.(uint32)
 		}
 
+		log.Println(newValue)
 		// Write Value to ValueName key
 		k.SetDWordValue(v.Name, newValue)
 	}
