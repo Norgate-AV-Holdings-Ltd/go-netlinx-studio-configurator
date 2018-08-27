@@ -1,14 +1,14 @@
 {
   "BasePath": "%USERPROFILE%\\Documents\\BitBucketRepos\\_global_amx_files",
   "Modules": [
-    "JavaModules",
-    "NetlinxModules",
-    "rmsJavaModules",
-    "rmsNetlinxModules"
+    "ModulesDuet",
+    "ModulesNetlinx",
+    "ModulesDuetRms",
+    "ModulesNetlinxRms"
   ],
   "Includes": [
     "Includes",
-    "rmsIncludes"
+    "IncludesRms"
   ],
   "Libs": [],
   "CompileWithDebug": true,

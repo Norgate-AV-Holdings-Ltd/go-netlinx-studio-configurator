@@ -32,14 +32,14 @@ Sample config file (config.json)
 {
   "BasePath": "%USERPROFILE%\\Documents\\BitBucketRepos\\_global_amx_files",
   "Modules": [
-    "JavaModules",
-    "NetlinxModules",
-    "rmsJavaModules",
-    "rmsNetlinxModules"
+    "ModulesDuet",
+    "ModulesNetlinx",
+    "ModulesDuetRms",
+    "ModulesNetlinxRms"
   ],
   "Includes": [
     "Includes",
-    "rmsIncludes"
+    "IncludesRms"
   ],
   "Libs": [],
   "CompileWithDebug": true,
@@ -63,3 +63,5 @@ The application will update registry keys in thej following locations:
 ## Author
 
 Created by Sam Shelton for Solo Works London
+
+Find us at https://soloworks.co.uk/
