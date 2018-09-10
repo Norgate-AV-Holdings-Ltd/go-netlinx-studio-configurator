@@ -1,5 +1,6 @@
+
 {
-  "BasePath": "%USERPROFILE%\\Documents\\BitBucketRepos\\SoloWorksAMX",
+  "BasePath": "%USERPROFILE%\\Documents\\GitHub\\netlinx-global-code",
   "Modules": [
     "ModulesDuet",
     "ModulesNetlinx",

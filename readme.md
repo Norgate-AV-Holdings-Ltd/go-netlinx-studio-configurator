@@ -1,6 +1,6 @@
-# NetlinxStudioConfigTool : Go based tool for configuring AMX Netlinx Studio installations
+# netlinxstudioconfigurator : Go based tool for configuring AMX Netlinx Studio installations
 
-## Overview [![GoDoc](https://godoc.org/bitbucket.org/solo_works/netlinxstudioconfigtool?status.svg)](https://godoc.org/bitbucket.org/solo_works/netlinxstudioconfigtool)
+## Overview [![GoDoc](https://godoc.org/bitbucket.org/solo_works/netlinxstudioconfigurator?status.svg)](https://godoc.org/bitbucket.org/solo_works/netlinxstudioconfigurator)
 
 This package produces a tool to allow automatic configuration of various settings for AMX Netlinx Studio. These include setting of default folders for Module, Include and Library files for centralised code.
 
@@ -18,19 +18,19 @@ Versioned Binaries are in the near future. For now there is a copy of the latest
 
 Clear all existing Folder settings (Keeps all defaults i.e. with AMXShare in the path)
 ```console
-> NetlinxStudioConfigTool -Clear 
+> netlinxstudioconfigurator -Clear 
 ```
 
 Specify a config file for use (Default: config.json)
 ```console
-> NetlinxStudioConfigTool -Config xxx.json 
+> netlinxstudioconfigurator -Config xxx.json 
 ```
 
 ## Configuration File
 Sample config file (config.json)
 ```json
 {
-  "BasePath": "%USERPROFILE%\\Documents\\BitBucketRepos\\SoloWorksAMX",
+  "BasePath": "%USERPROFILE%\\Documents\\GitHub\\netlinx-global-code",
   "Modules": [
     "ModulesDuet",
     "ModulesNetlinx",

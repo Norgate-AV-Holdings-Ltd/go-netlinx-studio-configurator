@@ -43,44 +43,46 @@ type myargs struct {
 var args myargs
 
 func main() {
+	// Set ConfigFile Variable
+	cf := ConfigFile{}
 
 	// Get Command Line Variables
 	flag.StringVar(&args.configFile, "Config", "config.json", "Config File name")
 	flag.BoolVar(&args.clearExisting, "Clear", false, "Clear Existing Settings")
 	flag.Parse()
 
-	// Load in Config Settings
-	file, err := os.Open(args.configFile)
-	if err != nil {
-		log.Println("Error Loading config file " + args.configFile)
-		log.Println(err)
-		os.Exit(0)
-	}
+	if !args.clearExisting {
+		// Load in Config Settings
+		file, err := os.Open(args.configFile)
+		if err != nil {
+			log.Println("Error Loading config file " + args.configFile)
+			log.Println(err)
+			os.Exit(0)
+		}
 
-	// Read Config Settings
-	decoder := json.NewDecoder(file)
-	cf := ConfigFile{}
-	err = decoder.Decode(&cf)
-	if err != nil {
-		log.Println("Config File Error: ")
-		log.Println(err)
-		os.Exit(0)
-	}
+		// Read Config Settings
+		decoder := json.NewDecoder(file)
+		err = decoder.Decode(&cf)
+		if err != nil {
+			log.Println("Config File Error: ")
+			log.Println(err)
+			os.Exit(0)
+		}
 
-	// Alter Config settings for %USERPROFILE% if present
-	cf.BasePath = strings.Replace(cf.BasePath, `%USERPROFILE%`, os.Getenv("USERPROFILE"), 1)
+		// Alter Config settings for %USERPROFILE% if present
+		cf.BasePath = strings.Replace(cf.BasePath, `%USERPROFILE%`, os.Getenv("USERPROFILE"), 1)
 
-	// Change file paths to fully qualified based on base folder
-	for i, stub := range cf.Includes {
-		cf.Includes[i] = filepath.Join(cf.BasePath, stub)
+		// Change file paths to fully qualified based on base folder
+		for i, stub := range cf.Includes {
+			cf.Includes[i] = filepath.Join(cf.BasePath, stub)
+		}
+		for i, stub := range cf.Modules {
+			cf.Modules[i] = filepath.Join(cf.BasePath, stub)
+		}
+		for i, stub := range cf.Libs {
+			cf.Libs[i] = filepath.Join(cf.BasePath, stub)
+		}
 	}
-	for i, stub := range cf.Modules {
-		cf.Modules[i] = filepath.Join(cf.BasePath, stub)
-	}
-	for i, stub := range cf.Libs {
-		cf.Libs[i] = filepath.Join(cf.BasePath, stub)
-	}
-
 	// Create Waitgroup for sync control
 	var wg sync.WaitGroup
 
@@ -90,41 +92,46 @@ func main() {
 	updateFolders("Module", cf.Modules, &wg)
 	updateFolders("Lib", cf.Libs, &wg)
 
-	// Update Settings - Editor Preferences
-	Values := []regEntry{}
-	if cf.IndentWidth > 0 {
-		Values = append(Values, regEntry{"IndentWidth", cf.IndentWidth})
+	if !args.clearExisting {
+		// Update Settings - Editor Preferences
+		Values := []regEntry{}
+		if cf.IndentWidth > 0 {
+			Values = append(Values, regEntry{"IndentWidth", cf.IndentWidth})
+		}
+		if cf.TabWidth > 0 {
+			Values = append(Values, regEntry{"TabWidth", cf.TabWidth})
+		}
+		wg.Add(1)
+		updateSettings("Editor Preferences", Values, &wg)
+
+		// Update Settings - Batch Transfer User Options
+		Values = []regEntry{}
+		Values = append(Values, regEntry{"TP4 Smart Transfer", cf.SmartTransfer})
+		Values = append(Values, regEntry{"TP5 Smart Transfer", cf.SmartTransfer})
+		Values = append(Values, regEntry{"Auto Send SRC", cf.SendSource})
+		wg.Add(1)
+		updateSettings("Batch Transfer User Options", Values, &wg)
+
+		// Update Settings - NLXCompiler_Options
+		Values = []regEntry{}
+		Values = append(Values, regEntry{"BuildWithDebugInfo", cf.CompileDebug})
+		Values = append(Values, regEntry{"BuildWithSource", cf.CompileSrc})
+		Values = append(Values, regEntry{"EnableWC", true})
+		wg.Add(1)
+		updateSettings("NLXCompiler_Options", Values, &wg)
 	}
-	if cf.TabWidth > 0 {
-		Values = append(Values, regEntry{"TabWidth", cf.TabWidth})
-	}
-	wg.Add(1)
-	updateSettings("Editor Preferences", Values, &wg)
-
-	// Update Settings - Batch Transfer User Options
-	Values = []regEntry{}
-	Values = append(Values, regEntry{"TP4 Smart Transfer", cf.SmartTransfer})
-	Values = append(Values, regEntry{"TP5 Smart Transfer", cf.SmartTransfer})
-	Values = append(Values, regEntry{"Auto Send SRC", cf.SendSource})
-	wg.Add(1)
-	updateSettings("Batch Transfer User Options", Values, &wg)
-
-	// Update Settings - NLXCompiler_Options
-	Values = []regEntry{}
-	Values = append(Values, regEntry{"BuildWithDebugInfo", cf.CompileDebug})
-	Values = append(Values, regEntry{"BuildWithSource", cf.CompileSrc})
-	Values = append(Values, regEntry{"EnableWC", true})
-	wg.Add(1)
-	updateSettings("NLXCompiler_Options", Values, &wg)
-
 	// Wait, Tidyup, End
 	wg.Wait()
-	fmt.Println("Configuration Finished!")
+	if args.clearExisting {
+		fmt.Println("Configuration Cleared")
+	} else {
+		fmt.Println("Configuration Applied")
+	}
 }
 
 func updateSettings(KeyName string, Values []regEntry, wg *sync.WaitGroup) {
 	// Defer Sync
-	defer log.Println(`Updated Registry: HKEY_CURRENT_USER\Software\AMX Corp.\NetLinx Studio\` + KeyName)
+	defer fmt.Println(`Updated Registry: HKEY_CURRENT_USER\Software\AMX Corp.\NetLinx Studio\` + KeyName)
 	defer wg.Done()
 
 	// Open Include Files Key
@@ -146,8 +153,6 @@ func updateSettings(KeyName string, Values []regEntry, wg *sync.WaitGroup) {
 		case uint32:
 			newValue = v.Value.(uint32)
 		}
-
-		log.Println(newValue)
 		// Write Value to ValueName key
 		k.SetDWordValue(v.Name, newValue)
 	}
@@ -156,7 +161,7 @@ func updateSettings(KeyName string, Values []regEntry, wg *sync.WaitGroup) {
 
 func updateFolders(FolderType string, Folders []string, wg *sync.WaitGroup) {
 	// Defer Sync
-	defer log.Println(`Updated Registry: HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AMX Corp.\NetLinx Studio\NLXCompiler_` + FolderType)
+	defer fmt.Println(`Updated Registry: HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AMX Corp.\NetLinx Studio\NLXCompiler_` + FolderType)
 	defer wg.Done()
 
 	// Open Include Files Key
