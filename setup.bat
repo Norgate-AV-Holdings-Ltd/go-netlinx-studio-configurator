@@ -1,5 +1,5 @@
-@%~dp0netlinxstudioconfigurator -Clear
+@"%~dp0netlinxstudioconfigurator" -Clear
 @echo.
-@%~dp0netlinxstudioconfigurator -Config %~dp0config.json
+@"%~dp0netlinxstudioconfigurator" -Config "%~dp0config.json"
 @echo.
 @PAUSE
